@@ -112,7 +112,7 @@ func newPrompt(w http.ResponseWriter, charset, prompt string, attempts int) {
 		<input type="hidden" id="prompt" name="prompt" value="%s"/>
 		<input type="hidden" id="attempts" name="attempts" value="%d"/>
 		<label for="answer">Answer</label><br>
-		<input type="text" id="answer" name="answer"><br>
+		<input type="text" id="answer" name="answer" autofocus><br>
 		<input type="submit" value="Check">
 		</form> 
 	</body>

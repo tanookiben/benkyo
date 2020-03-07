@@ -58,9 +58,7 @@ func health(w http.ResponseWriter, r *http.Request) {
 func study(w http.ResponseWriter, r *http.Request) {
 	charset := r.URL.Query().Get("charset")
 	if charset == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		write(w, fmt.Sprintf("Invalid charset"))
-		return
+		charset = japanese.HiraganaStudy
 	}
 	newPrompt(w, charset, "")
 }

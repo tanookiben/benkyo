@@ -87,6 +87,7 @@ func newPrompt(w http.ResponseWriter, charset, prompt string) {
 <!DOCTYPE html>
 <html>
 	<body>
+		<h1>%s</h1>
 		<form action="/answer">
 		<input type="hidden" id="charset" name="charset" value="%s"/>
 		<input type="hidden" id="prompt" name="prompt" value="%s"/>
@@ -96,7 +97,7 @@ func newPrompt(w http.ResponseWriter, charset, prompt string) {
 		</form> 
 	</body>
 </html>
-	`, charset, prompt))
+	`, prompt, charset, prompt))
 }
 
 func write(w http.ResponseWriter, m string) {

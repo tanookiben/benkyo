@@ -94,6 +94,7 @@ func newPrompt(w http.ResponseWriter, charset, prompt string, attempts int) {
 		message = " (try again)"
 	}
 	if attempts > 4 {
+		attempts = 0
 		message = fmt.Sprintf(" ( %s: '%s' )", prompt, japanese.Hint(charset, prompt))
 		prompt = japanese.Prompt(charset)
 	}

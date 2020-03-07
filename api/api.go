@@ -32,6 +32,7 @@ func NewAPI(c config.Config) API {
 	}
 
 	mux.HandleFunc("/", study)
+	mux.HandleFunc("/answer", answer)
 	mux.HandleFunc("/health", health)
 
 	return &apiImpl{
@@ -80,14 +81,17 @@ func answer(w http.ResponseWriter, r *http.Request) {
 }
 
 func newPrompt(w http.ResponseWriter, charset, prompt string) {
+	var wrong string
 	if prompt == "" {
 		prompt = japanese.Prompt(charset)
+	} else {
+		wrong = " (Try again)"
 	}
 	write(w, fmt.Sprintf(`
 <!DOCTYPE html>
 <html>
 	<body>
-		<h1>%s</h1>
+		<h1>%s%s</h1>
 		<form action="/answer">
 		<input type="hidden" id="charset" name="charset" value="%s"/>
 		<input type="hidden" id="prompt" name="prompt" value="%s"/>
@@ -97,7 +101,7 @@ func newPrompt(w http.ResponseWriter, charset, prompt string) {
 		</form> 
 	</body>
 </html>
-	`, prompt, charset, prompt))
+	`, prompt, wrong, charset, prompt))
 }
 
 func write(w http.ResponseWriter, m string) {

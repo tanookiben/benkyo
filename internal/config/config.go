@@ -12,9 +12,19 @@ type Config struct {
 	Addr string `json:"addr"`
 }
 
+var (
+	defaultConfig = Config{
+		Addr: "8000",
+	}
+)
+
 // Read ...
 func Read() Config {
-	raw, err := ioutil.ReadFile(os.Getenv("CONFIG_PATH"))
+	path := os.Getenv("CONFIG_PATH")
+	if path == "" {
+		return defaultConfig
+	}
+	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalf("Error reading config file: %v", err)
 	}

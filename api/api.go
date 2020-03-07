@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/tanookiben/benkyo/internal/config"
@@ -85,13 +86,18 @@ func newPrompt(w http.ResponseWriter, charset, prompt string) {
 	if prompt == "" {
 		prompt = japanese.Prompt(charset)
 	} else {
-		wrong = " (Try again)"
+		wrong = " (try again)"
+	}
+	swap := japanese.KatakanaStudy
+	if charset == japanese.KatakanaStudy {
+		swap = japanese.HiraganaStudy
 	}
 	write(w, fmt.Sprintf(`
 <!DOCTYPE html>
 <html>
 	<body>
-		<h1>%s%s</h1>
+		<h1><a href="?charset=%s">%s</a></h1>
+		<h2>%s%s</h2>
 		<form action="/answer">
 		<input type="hidden" id="charset" name="charset" value="%s"/>
 		<input type="hidden" id="prompt" name="prompt" value="%s"/>
@@ -101,7 +107,7 @@ func newPrompt(w http.ResponseWriter, charset, prompt string) {
 		</form> 
 	</body>
 </html>
-	`, prompt, wrong, charset, prompt))
+	`, swap, strings.Title(charset), prompt, wrong, charset, prompt))
 }
 
 func write(w http.ResponseWriter, m string) {

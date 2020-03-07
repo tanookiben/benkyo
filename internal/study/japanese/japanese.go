@@ -44,3 +44,15 @@ func Check(charset, prompt, answer string) bool {
 		return false
 	}
 }
+
+// Hint returns the answer for the prompt for the specified charset
+func Hint(charset, prompt string) string {
+	switch charset {
+	case HiraganaStudy:
+		return hiragana[prompt]
+	case KatakanaStudy:
+		return katakana[prompt]
+	default:
+		return ""
+	}
+}

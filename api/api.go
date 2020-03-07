@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -62,7 +63,7 @@ func study(w http.ResponseWriter, r *http.Request) {
 	if charset == "" {
 		charset = japanese.HiraganaStudy
 	}
-	newPrompt(w, charset, "")
+	newPrompt(w, charset, "", 0)
 }
 
 func answer(w http.ResponseWriter, r *http.Request) {
@@ -73,20 +74,28 @@ func answer(w http.ResponseWriter, r *http.Request) {
 	charset := r.Form.Get("charset")
 	prompt := r.Form.Get("prompt")
 	answer := r.Form.Get("answer")
+	attempts, err := strconv.Atoi(r.Form.Get("attempts"))
+	if err != nil {
+		attempts = 0
+	}
 	if japanese.Check(charset, prompt, answer) {
-		newPrompt(w, charset, "")
+		newPrompt(w, charset, "", 0)
 		return
 	}
-	newPrompt(w, charset, prompt)
+	newPrompt(w, charset, prompt, attempts+1)
 	return
 }
 
-func newPrompt(w http.ResponseWriter, charset, prompt string) {
-	var wrong string
+func newPrompt(w http.ResponseWriter, charset, prompt string, attempts int) {
+	var message string
 	if prompt == "" {
 		prompt = japanese.Prompt(charset)
 	} else {
-		wrong = " (try again)"
+		message = " (try again)"
+	}
+	if attempts > 4 {
+		message = fmt.Sprintf(" (%q: %q)", prompt, japanese.Hint(charset, prompt))
+		prompt = japanese.Prompt(charset)
 	}
 	swap := japanese.KatakanaStudy
 	if charset == japanese.KatakanaStudy {
@@ -101,13 +110,14 @@ func newPrompt(w http.ResponseWriter, charset, prompt string) {
 		<form action="/answer">
 		<input type="hidden" id="charset" name="charset" value="%s"/>
 		<input type="hidden" id="prompt" name="prompt" value="%s"/>
+		<input type="hidden" id="attempts" name="attempts" value="%d"/>
 		<label for="answer">Answer</label><br>
 		<input type="text" id="answer" name="answer"><br>
 		<input type="submit" value="Check">
 		</form> 
 	</body>
 </html>
-	`, swap, strings.Title(charset), prompt, wrong, charset, prompt))
+	`, swap, strings.Title(charset), prompt, message, charset, prompt, attempts))
 }
 
 func write(w http.ResponseWriter, m string) {

@@ -14,7 +14,7 @@ type Config struct {
 
 var (
 	defaultConfig = Config{
-		Addr: "8000",
+		Addr: ":8000",
 	}
 )
 
